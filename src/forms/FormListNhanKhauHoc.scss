@@ -1,0 +1,18 @@
+.cs-form-list-item {
+  .cs-num-order {
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      height: 110vh;
+      top: 30px;
+      left: 44%;
+      display: block;
+      border-left: 1px dashed #94a3b8;
+    }
+  }
+  .cs-chip-tag {
+    background-color: rgba(15, 177, 128, 0.1);
+    color: rgba(15, 177, 128, 1);
+  }
+}

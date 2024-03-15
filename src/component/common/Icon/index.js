@@ -1,0 +1,20 @@
+import IconDownload from './IconDownload';
+import IconUpload from './IconUpload';
+import IconFilter from './IconFilter';
+import IconRound from './IconRound';
+import IconThuThap from './IconThuThap';
+import IconDown from './IconDown';
+import IconSubMenu from './IconSubMenu';
+import IconMess from './IconMess';
+import IconEdit from './IconEdit';
+import IconSearch from './IconSearch';
+import IconInfo from './IconInfo';
+import IconPhanGiao from './IconPhanGiao';
+import IconDashboard from './IconDashBoard';
+import IconTruyenThong from './IconTruyenThong';
+import IconTaiKhoan from './IconTaiKhoan';
+import IconCalendar from './IconCalendar';
+import IconTrash from './IconTrash';
+import IconDropdown from './IconDropdown';
+
+export { IconDownload, IconUpload, IconFilter, IconRound, IconThuThap, IconDown, IconSubMenu, IconMess, IconEdit, IconSearch, IconInfo, IconPhanGiao, IconDashboard, IconTruyenThong, IconTaiKhoan, IconCalendar, IconTrash, IconDropdown };

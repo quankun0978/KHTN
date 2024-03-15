@@ -1,0 +1,32 @@
+.input-common {
+  .custom-input {
+    border-radius: 6px;
+    position: relative;
+    padding-left: 16px;
+    padding-top: 16px;
+    &:focus + span,
+    &:not(:placeholder-shown) + span {
+      top: 0;
+      transform: unset;
+      left: 16px;
+      font-size: 12px;
+      color: #3aa4f6;
+    }
+  }
+  &__placeholder {
+    position: absolute;
+    pointer-events: none;
+    left: 16px;
+    top: 48%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    line-height: 24px;
+    color: #7c808b;
+    transition: 0.3s ease all;
+  }
+  &__help-text {
+    pointer-events: none;
+    color: #a0b4b6;
+    font-size: 13px;
+  }
+}
