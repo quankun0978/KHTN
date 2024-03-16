@@ -5,6 +5,7 @@ import { Divider, Modal } from 'antd';
 
 import { Button, Input, DatePicker } from '@/component/common';
 import Table from '@/component/common/Table/Table';
+import { Notification } from '@/component/common/Notification/Notification';
 
 import { ExclamationCircleFilled, SearchOutlined } from '@ant-design/icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -30,11 +31,15 @@ const columns = () => [
   },
   {
     title: 'Thời gian tạo',
-    dataIndex: 'timeCreate',
+    dataIndex: 'create_time',
   },
   {
     title: 'Người tạo',
     dataIndex: 'create_by',
+  },
+  {
+    title: 'Trạng thái',
+    dataIndex: 'status',
   },
   {
     title: 'Thao tác',
@@ -54,10 +59,68 @@ const DanhSachNhomQuyen = () => {
   const [date, setDate] = useState('');
 
   useEffect(() => {
-    getData();
+    handleGetData();
   }, [page]);
 
-  const getData = async () => {
+  const onClickUpdate = (id) => {
+    navigate(ROUTES.CHI_TIET_NHOM_QUYEN + `/${id}`);
+  };
+
+  const onClickChangeStatus = (item) => {
+    confirm({
+      width: 400,
+      okText: 'Thay đổi',
+      cancelText: 'hủy',
+      okType: 'default',
+      title: `Bạn có muốn ${item.status === 1 ? 'ngừng kích hoạt' : 'kích hoạt'} nhóm quyền ${item.name} không ?`,
+      icon: <ExclamationCircleFilled />,
+
+      onOk() {
+        handleChangeStatus({ id: item.id, status: item.status === 1 ? 0 : 1 });
+      },
+      onCancel() {},
+    });
+  };
+
+  const onChange = (date, dateString) => {
+    setDate(dateString);
+  };
+
+  const onSearch = () => {
+    let dataFilter = dtTable.current; // Khởi tạo dataFilter với giá trị ban đầu là toàn bộ dtTable
+
+    if (valuePermissonGroup) {
+      dataFilter = dataFilter.filter((item) => item.name.includes(valuePermissonGroup));
+    }
+    if (valueCreator) {
+      dataFilter = dataFilter.filter((item) => item.create_by.includes(valueCreator));
+    }
+    if (date) {
+      dataFilter = dataFilter.filter((item) => item.create_time === date);
+    }
+
+    setDataTable(dataFilter);
+  };
+
+  const handleOnclickCreate = () => {
+    navigate(ROUTES.THEM_MOI_NHOM_QUYEN);
+  };
+
+  const handleChangeStatus = async (data) => {
+    const result = await PhanQuyen.CHANGE_STATUS_GROUP(data);
+    if (result && result.data && result.data.code === 0) {
+      Notification.success('Thay đổi trạng thái thành công');
+      const dataLateDelete = dtTable.current.map((i) => {
+        if (i.id === data.id) return { ...i, status: i.status === 0 ? 'Ngừng kích hoạt' : 'kích hoạt' };
+        return i;
+      });
+      setDataTable(dataLateDelete);
+    } else {
+      Notification.error('Thay đổi trạng thái không thành công');
+    }
+  };
+
+  const handleGetData = async () => {
     const data = await PhanQuyen.LIST_GROUP(JSON.stringify({ page: page > 0 ? page - 1 : page, size: 5, name: 's', creator: null }));
     const pageSize = 5;
     const dataMapOperation =
@@ -68,9 +131,12 @@ const DanhSachNhomQuyen = () => {
         const pageIndex = (page - 1) * pageSize;
         return {
           ...item,
+          description: 'Test ',
+          create_by: `Dũng sobin ${item.id}`,
+          create_time: `10/03/2024`,
           index: pageIndex + index + 1,
           key: item.key,
-
+          status: item.status === 1 ? 'Kích hoạt' : 'Ngừng kích hoạt',
           operation: (
             <div
               className="flex gap-3"
@@ -82,7 +148,7 @@ const DanhSachNhomQuyen = () => {
                 className="text-xl"
               />
               <FontAwesomeIcon
-                onClick={() => onClickDelete(item)}
+                onClick={() => onClickChangeStatus(item)}
                 style={{ color: 'rgba(255, 86, 53, 1)' }}
                 icon={faTrashCan}
                 className="text-xl"
@@ -91,74 +157,12 @@ const DanhSachNhomQuyen = () => {
           ),
         };
       });
-    // const dt = [];
-    // for (let i = 0; i < 20; i++) {
-    //   dt.push({
-    //     index: i + 1,
-    //     key: i,
-    //     name: `Duy đẹp trai ${i + 1}`,
-    //     timeCreate: `2${i}/01/2023`,
-    //     creator: `Dũng chubin ${i}`,
-    //   });
-    // }
+
     dtTable.current = dataMapOperation;
     setDataTable(dataMapOperation);
-    // dtTable.current = dt;
-    // setDataTable(dt);
     setTotalPage(data && data.data && data.data.data.total_elements);
   };
 
-  const onClickUpdate = (id) => {
-    navigate(ROUTES.CHI_TIET_NHOM_QUYEN + `/${id}`);
-  };
-
-  const onClickDelete = (item) => {
-    confirm({
-      width: 400,
-      okText: 'xóa',
-      cancelText: 'hủy',
-      okType: 'default',
-      title: `Bạn có muốn xóa nhóm quyền ${item.name} không ?`,
-      icon: <ExclamationCircleFilled />,
-
-      onOk() {
-        const dataLateDelete = dtTable.current.filter((i) => {
-          return i.key !== item.key;
-        });
-
-        setDataTable(dataLateDelete);
-      },
-      onCancel() {},
-    });
-  };
-
-  const onSearch = () => {
-    console.log(valueCreator, valuePermissonGroup, date);
-    console.log(dtTable);
-
-    let dataFilter = dtTable.current; // Khởi tạo dataFilter với giá trị ban đầu là toàn bộ dtTable
-
-    if (valuePermissonGroup) {
-      dataFilter = dataFilter.filter((item) => item.name.includes(valuePermissonGroup));
-    }
-    if (valueCreator) {
-      dataFilter = dataFilter.filter((item) => item.create_by.includes(valueCreator));
-    }
-    if (date) {
-      dataFilter = dataFilter.filter((item) => item.timeCreate === date);
-    }
-
-    setDataTable(dataFilter);
-    console.log(dataFilter);
-  };
-
-  const onChange = (date, dateString) => {
-    setDate(dateString);
-  };
-
-  const handleOnclickCreate = () => {
-    navigate(ROUTES.THEM_MOI_NHOM_QUYEN);
-  };
   return (
     <>
       <div className="mx-3 ">

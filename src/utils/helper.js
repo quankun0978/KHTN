@@ -171,3 +171,28 @@ export const beforeUploadMedia = (type, file) => {
   //   });
   // });
 };
+export const convertDataCheckbox = (value) => {
+  switch (value) {
+    case 'readable':
+      return 'Danh sách';
+    case 'addable':
+      return 'Thên mới';
+    case 'editable':
+      return 'Chỉnh sửa';
+    case 'approveable':
+      return 'Cấp quyền';
+  }
+};
+
+export const convertValueCheckbox = (value) => {
+  switch (value) {
+    case 'readable':
+      return 'can_read';
+    case 'addable':
+      return 'can_add';
+    case 'editable':
+      return 'can_edit';
+    case 'approveable':
+      return 'can_approve';
+  }
+};
